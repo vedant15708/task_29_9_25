@@ -1,122 +1,165 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-void main() {
-  runApp(const MyApp());
+void main(){
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      home: SettingScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class SettingScreen extends StatefulWidget {
+  const SettingScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SettingScreen> createState() => _SettingScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _SettingScreenState extends State<SettingScreen> {
+  bool _cellularDataEnabled = true;
+  bool _wifiEnabled = false;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  String? _notificationSetting = 'allow';
+
+  bool _microphoneAccess = true;
+  bool _locationAccess = true;
+  bool _hapticsEnabled = false;
+
+  void showToast(String message){
+    Fluttertoast.showToast(
+        msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM ,
+      backgroundColor: Colors.black54,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
-
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text("Settings",style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.deepPurple,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: ListView(
+        children: [
+          ListTile(
+            title: Text(
+              "Toggle",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black
+              ),
             ),
-          ],
-        ),
+          ),
+          SwitchListTile(
+            title: const Text('Cellular Data'),
+              value: _cellularDataEnabled,
+              onChanged: (bool value){
+                setState(() {
+                  _cellularDataEnabled = value;
+                });
+                showToast("Selected value: Cellular Data is now ${value ? 'On' : 'Off'}");
+              },
+            secondary: null,
+          ),
+          SwitchListTile(
+            title: const Text('Wi-Fi'),
+            value: _wifiEnabled,
+            onChanged: (bool value) {
+              setState(() {
+                _wifiEnabled = value;
+              });
+              showToast("Selected value: Wi-Fi is now ${value ? 'On' : 'Off'}");
+            },
+            secondary: null,
+          ),
+          const Divider(),
+          const ListTile(
+            title: Text(
+              'Single check',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          RadioListTile<String>(
+            title: const Text('Allow notifications'),
+            value: 'allow',
+            groupValue: _notificationSetting,
+            onChanged: (String? value) {
+              setState(() {
+                _notificationSetting = value;
+              });
+              showToast("Selected value: Notification is now ${value != null ? 'On' : 'Off'}");
+            },
+            controlAffinity: ListTileControlAffinity.trailing,
+          ),
+          RadioListTile<String>(
+            title: const Text('Turn off notifications'),
+            value: 'turn_off',
+            groupValue: _notificationSetting,
+            onChanged: (String? value) {
+              setState(() {
+                _notificationSetting = value;
+              });
+              showToast("Selected value: Notification is now ${value != null ? 'Off' : 'on'}");
+            },
+            controlAffinity: ListTileControlAffinity.trailing,
+          ),
+          const Divider(),
+          const ListTile(
+            title: Text(
+              'Multiple check',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          CheckboxListTile(
+            title: const Text('Microphone access'),
+            value: _microphoneAccess,
+            onChanged: (bool? value) {
+              setState(() {
+                _microphoneAccess = value ?? false;
+              });
+              showToast("Selected value: Microphone access is now ${value == true ? 'Checked' : 'Unchecked'}");
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Location access'),
+            value: _locationAccess,
+            onChanged: (bool? value) {
+              setState(() {
+                _locationAccess = value ?? false;
+              });
+              showToast("Selected value: Location access is now ${value == true ? 'Checked' : 'Unchecked'}");
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Haptics'),
+            value: _hapticsEnabled,
+            onChanged: (bool? value) {
+              setState(() {
+                _hapticsEnabled = value ?? false;
+              });
+              showToast("Selected value: Haptics is now ${value == true ? 'Checked' : 'Unchecked'}");
+            },
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
